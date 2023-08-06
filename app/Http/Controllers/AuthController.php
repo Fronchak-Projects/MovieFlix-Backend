@@ -9,12 +9,9 @@ use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
-    private User $user;
-
-    public function __construct(User $user)
+    public function __construct()
     {
         $this->middleware('jwt.auth')->only(['update', 'changePassword']);
-        $this->user = $user;    
     }
 
     public function login() {
