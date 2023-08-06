@@ -110,6 +110,12 @@ class GenreController extends Controller
     public function destroy($id)
     {
         $genre = $this->getGenreById($id);
+
+        $oldImage = $genre->image;
+        if(!is_null($oldImage)) {
+            Storage::disk('public')->delete($oldImage);
+        }
+
         $genre->delete();
         return response('', 204);
     }

@@ -21,7 +21,7 @@ class Genre extends Model
     public function feedback() {
         return [
             "required" => "The :attribute is required",
-            "name:unique" => "Genre name already used",
+            "unique" => "Genre name already used",
             "image" => "Invalid image file type"
         ];
     }

@@ -12,7 +12,7 @@ class GenreMapper
         return [
             'id' => $genre->id,
             'name' => $genre->name,
-            'imageURL' => $genre->imageURL
+            'image' => $genre->image
         ];
     }
 
