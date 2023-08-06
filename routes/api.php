@@ -34,4 +34,5 @@ Route::group([
     Route::post('me', [AuthController::class, 'me']);
     Route::post('register', [AuthController::class, 'register']);
     Route::put('update', [AuthController::class, 'update']);
+    Route::put('change-password', [AuthController::class, 'changePassword']);
 });

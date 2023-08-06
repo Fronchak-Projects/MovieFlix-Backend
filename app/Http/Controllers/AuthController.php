@@ -13,6 +13,7 @@ class AuthController extends Controller
 
     public function __construct(User $user)
     {
+        $this->middleware('jwt.auth')->only(['update', 'changePassword']);
         $this->user = $user;    
     }
 
@@ -81,6 +82,8 @@ class AuthController extends Controller
             unset($rules['image']);
         }
 
+        $request->validate($rules, $parameters);
+
         $oldImage = $user->image;
         $user->name = $request->get('name');
         if($hasImage) {
@@ -95,6 +98,34 @@ class AuthController extends Controller
             Storage::disk('public')->delete($oldImage);
         }
 
-        return response();
+        return response('');
+    }
+
+    public function changePassword(Request $request) {
+        $user = auth()->user();
+        $rules = [
+            'old_password' => 'required',
+            'new_password' => 'required|min:4',
+            'confirm_new_password' => 'required|same:new_password'
+        ];
+        $feedback = [
+            'required' => 'The :attribute is required'
+        ];
+        $request->validate($rules, $feedback);
+
+        $token = auth()->attempt([
+            'email' => $user->email,
+            'password' => $request->get('old_password')
+        ]);
+
+        if(!$token) {
+            throw new UnauthorizedException('Invalid old password');
+        }
+
+        $encrypted = bcrypt($request->get('new_password'));
+        $user->password = $encrypted;
+        $user->update();
+
+        return response('');
     }
 }
