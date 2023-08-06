@@ -14,6 +14,7 @@ class MovieMapper
             'id' => $movie->id,
             'title' => $movie->title,
             'synopsis' => $movie->synopsis,
+            'image' => $movie->image,
             'genres' => $genresDTO
         ];
     }
@@ -24,6 +25,7 @@ class MovieMapper
             return [
                 'id' => $movie->id,
                 'title' => $movie->title,
+                'image' => $movie->image,
                 'genres' => $movie->genres->map(function($genre) {
                     return [
                         'id' => $genre->id,

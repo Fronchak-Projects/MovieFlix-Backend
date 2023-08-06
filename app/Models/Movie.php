@@ -11,7 +11,6 @@ class Movie extends Model
     use HasFactory;
 
     protected $fillable = ["title", "synopsis"];
-    protected $with = ["genres"];
 
     public function rules() {
         return [
