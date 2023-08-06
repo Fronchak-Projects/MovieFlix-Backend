@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\MovieController;
 use Illuminate\Http\Request;
@@ -22,3 +23,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('genres', GenreController::class);
 Route::apiResource('movies', MovieController::class);
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function() {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
+    Route::post('register', [AuthController::class, 'register']);
+});
