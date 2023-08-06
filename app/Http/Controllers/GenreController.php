@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\BadRequestException;
 use App\Exceptions\EntityNotFoundException;
 use App\Mappers\GenreMapper;
 use App\Models\Genre;
@@ -110,6 +111,10 @@ class GenreController extends Controller
     public function destroy($id)
     {
         $genre = $this->getGenreById($id);
+        $movies = $genre->movies;
+        if($movies->count() > 0) {
+            throw new BadRequestException('This genre already has movie(s) associate to it');
+        } 
 
         $oldImage = $genre->image;
         if(!is_null($oldImage)) {
