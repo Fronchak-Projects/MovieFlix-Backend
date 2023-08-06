@@ -5,9 +5,17 @@ namespace App\Http\Controllers;
 use App\Exceptions\UnauthorizedException;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
+    private User $user;
+
+    public function __construct(User $user)
+    {
+        $this->user = $user;    
+    }
+
     public function login() {
         $credentials = request(['email', 'password']);
         return $this->authenticate($credentials);
@@ -58,5 +66,35 @@ class AuthController extends Controller
             'email' => $user->email,
             'password' => $request->get('password')
         ]);
+    }
+
+    public function update(Request $request) {
+        $user = auth()->user();
+        $rules = $user->rules();
+        $parameters = $request->all();
+        $hasImage = array_key_exists('image', $parameters);
+
+        unset($rules['email']);
+        unset($rules['password']);
+        unset($rules['confirm_password']);
+        if(!$hasImage) {
+            unset($rules['image']);
+        }
+
+        $oldImage = $user->image;
+        $user->name = $request->get('name');
+        if($hasImage) {
+            $image = $request->file('image');
+            $imageUrn = $image->store('imgs/users', 'public');
+            $user->image = $imageUrn;
+        }
+
+        $user->update();
+
+        if(!is_null($oldImage) && $hasImage) {
+            Storage::disk('public')->delete($oldImage);
+        }
+
+        return response();
     }
 }

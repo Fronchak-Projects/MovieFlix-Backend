@@ -49,13 +49,15 @@ class User extends Authenticatable implements JWTSubject
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:4',
-            'confirm_password' => 'required|same:password'
+            'confirm_password' => 'required|same:password',
+            'image' => 'required|file|mimes:jpeg,jpg,png',
         ];
     }
 
     public function feedback() {
         return [
-            'required' => 'The :attribute is required'
+            'required' => 'The :attribute is required',
+            'image' => 'Invalid image file type'
         ];
     }
 
@@ -76,6 +78,8 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims()
     {
-        return [$this->email];
+        return [
+            'email' => $this->email
+        ];
     }
 }

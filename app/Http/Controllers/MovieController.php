@@ -19,6 +19,7 @@ class MovieController extends Controller
 
     public function __construct(Movie $movie, Genre $genre)
     {
+        $this->middleware('jwt.auth')->only(['show', 'store', 'update', 'destroy']);
         $this->movie = $movie;
         $this->genre = $genre;
     }
