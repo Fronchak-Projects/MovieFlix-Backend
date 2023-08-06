@@ -13,15 +13,16 @@ class Genre extends Model
 
     public function rules() {
         return [
-            "name" => "required|min:3|max:50",
-            "imageURL" => "required|file|mimes:jpeg,jpg,png"
+            "name" => "required|min:3|max:50|unique:genres,name",
+            "image" => "required|file|mimes:jpeg,jpg,png"
         ];
     }
 
     public function feedback() {
         return [
             "required" => "The :attribute is required",
-            "imageURL" => "Invalid image file type"
+            "name:unique" => "Genre name already used",
+            "image" => "Invalid image file type"
         ];
     }
 }
