@@ -49,8 +49,10 @@ class AuthController extends Controller
 
     public function register(Request $request) {
         $user = new User();
+        $rules = $user->rules();
+        unset($rules['image']);
 
-        $request->validate($user->rules(), $user->feedback());
+        $request->validate($rules, $user->feedback());
 
         $user->name = $request->get('name');
         $user->email = $request->get('email');
@@ -59,43 +61,12 @@ class AuthController extends Controller
         $encrypted = bcrypt($password);
         $user->password = $encrypted;
         $user->save();
+        $user->assignRole('user');
 
         return $this->authenticate([
             'email' => $user->email,
             'password' => $request->get('password')
         ]);
-    }
-
-    public function update(Request $request) {
-        $user = auth()->user();
-        $rules = $user->rules();
-        $parameters = $request->all();
-        $hasImage = array_key_exists('image', $parameters);
-
-        unset($rules['email']);
-        unset($rules['password']);
-        unset($rules['confirm_password']);
-        if(!$hasImage) {
-            unset($rules['image']);
-        }
-
-        $request->validate($rules, $parameters);
-
-        $oldImage = $user->image;
-        $user->name = $request->get('name');
-        if($hasImage) {
-            $image = $request->file('image');
-            $imageUrn = $image->store('imgs/users', 'public');
-            $user->image = $imageUrn;
-        }
-
-        $user->update();
-
-        if(!is_null($oldImage) && $hasImage) {
-            Storage::disk('public')->delete($oldImage);
-        }
-
-        return response('');
     }
 
     public function changePassword(Request $request) {

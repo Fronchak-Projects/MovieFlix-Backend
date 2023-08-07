@@ -24,8 +24,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('genres', GenreController::class);
 Route::apiResource('movies', MovieController::class);
-Route::get('users', [UserController::class, 'index']);
-Route::get('users/{id}', [UserController::class, 'show']);
+Route::group([
+    'prefix' => 'users'
+], function() {
+    Route::get('', [UserController::class, 'index']);
+    Route::get('{id}', [UserController::class, 'show']);
+    Route::put('update', [UserController::class, 'update']);
+    Route::delete('{id}', [UserController::class, 'destroy']);
+});
 
 Route::group([
     'middleware' => 'api',
@@ -36,6 +42,5 @@ Route::group([
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
     Route::post('register', [AuthController::class, 'register']);
-    Route::put('update', [AuthController::class, 'update']);
     Route::put('change-password', [AuthController::class, 'changePassword']);
 });
