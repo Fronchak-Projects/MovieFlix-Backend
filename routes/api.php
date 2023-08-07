@@ -28,6 +28,7 @@ Route::group([
     'prefix' => 'users'
 ], function() {
     Route::get('', [UserController::class, 'index']);
+    Route::get('me', [UserController::class, 'me']);
     Route::get('{id}', [UserController::class, 'show']);
     Route::put('update', [UserController::class, 'update']);
     Route::delete('{id}', [UserController::class, 'destroy']);

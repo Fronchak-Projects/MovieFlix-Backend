@@ -14,7 +14,7 @@ class UserController extends Controller
 
     public function __construct(User $user)
     {
-        $this->middleware('jwt.auth')->only(['index', 'show', 'update', 'destroy']);
+        $this->middleware('jwt.auth')->only(['index', 'show', 'update', 'destroy', 'me']);
         $this->middleware('role:worker|admin')->only(['index', 'show']);
         $this->middleware('role:admin')->only('destroy');
         $this->user = $user;
@@ -89,5 +89,12 @@ class UserController extends Controller
         }
 
         return response('', 204);
+    }
+
+    public function me() 
+    {
+        $user = auth()->user();
+        $dto = UserMapper::mapToDTO($user);
+        return response($dto);
     }
 }
