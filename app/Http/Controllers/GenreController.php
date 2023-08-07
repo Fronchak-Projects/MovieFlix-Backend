@@ -15,6 +15,8 @@ class GenreController extends Controller
 
     public function __construct(Genre $genre) {
         $this->middleware('jwt.auth')->only(['store', 'update', 'destroy']);
+        $this->middleware('role:worker|admin')->only(['store', 'update']);
+        $this->middleware('role:admin')->only('destroy');
         $this->genre = $genre;
     }
     /**

@@ -34,5 +34,13 @@ class Handler extends ExceptionHandler
                 'status'  => 401,
             ], 403);
         });
+
+        $this->renderable(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
+            return response()->json([
+                'error' => 'Forbidden',
+                'message' => 'You do not have the required authorization',
+                'status'  => 403,
+            ], 403);
+        });
     }
 }

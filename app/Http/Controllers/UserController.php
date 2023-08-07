@@ -14,6 +14,9 @@ class UserController extends Controller
 
     public function __construct(User $user)
     {
+        $this->middleware('jwt.auth')->only(['index', 'show', 'update', 'destroy']);
+        $this->middleware('role:worker|admin')->only(['index', 'show']);
+        $this->middleware('role:admin')->only('destroy');
         $this->user = $user;
     }
 

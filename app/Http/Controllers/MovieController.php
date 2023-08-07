@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\BadRequestException;
 use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\UnprocessableException;
 use App\Mappers\MovieMapper;
@@ -20,6 +19,9 @@ class MovieController extends Controller
     public function __construct(Movie $movie, Genre $genre)
     {
         $this->middleware('jwt.auth')->only(['show', 'store', 'update', 'destroy']);
+        $this->middleware('role:member|worker|admin')->only('show');
+        $this->middleware('role:worker|admin')->only(['store', 'update']);
+        $this->middleware('role:admin')->only('destroy');
         $this->movie = $movie;
         $this->genre = $genre;
     }
