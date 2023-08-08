@@ -20,7 +20,8 @@ class UnprocessableException extends Exception
     {
         return response([
             'message' => $this->message,
-            'errors' => $this->errors
+            'errors' => $this->errors,
+            'status'  => 422,
         ], 422);
     }
 }

@@ -43,7 +43,16 @@ class Handler extends ExceptionHandler
                 'status'  => 403,
             ], 403);
         });
-        /*
+
+        $this->renderable(function (\Illuminate\Validation\ValidationException $e, $request) {
+            //dd($e);
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => $e->errors(),
+                'status'  => 422,
+            ], 422);
+        });
+        
         $this->renderable(function (Exception $e, $request) {
             return response()->json([
                 'error' => 'Internal server error',
@@ -51,6 +60,6 @@ class Handler extends ExceptionHandler
                 'status'  => 500,
             ], 500);
         });
-        */
+        
     }
 }
