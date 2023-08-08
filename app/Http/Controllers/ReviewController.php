@@ -55,10 +55,48 @@ class ReviewController extends Controller
         $movie->reviews()->save($review);
         $dto = [
             'id' => $review->id,
-            'comment' => $review->message,
+            'comment' => $review->comment,
             'rating' => $review->rating
         ];
         return response($dto, 201);
+    }
+
+    public function movieReviews($movieId) 
+    {
+        $reviews = $this->review->with('user')->where('movie_id', '=', $movieId)->get();
+        $dtos = $reviews->map(function(Review $review) {
+            $user = $review->user;
+            return [
+                'id' => $review->id,
+                'comment' => $review->comment,
+                'rating' => $review->rating,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'image' => $user->image
+                ]
+            ];
+        });
+        return response($dtos);
+    }
+
+    public function userReviews($userId)
+    {
+        $reviews = $this->review->with('movie')->where('user_id', '=', $userId)->get();
+        $dtos = $reviews->map(function(Review $review) {
+            $movie = $review->movie;
+            return [
+                'id' => $review->id,
+                'comment' => $review->comment,
+                'rating' => $review->rating,
+                'movie' => [
+                    'id' => $movie->id,
+                    'title' => $movie->title,
+                    'image' => $movie->image
+                ]
+            ];
+        });
+        return response($dtos);
     }
 
     /**

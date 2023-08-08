@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -41,6 +42,14 @@ class Handler extends ExceptionHandler
                 'message' => 'You do not have the required authorization',
                 'status'  => 403,
             ], 403);
+        });
+
+        $this->renderable(function (Exception $e, $request) {
+            return response()->json([
+                'error' => 'Internal server error',
+                'message' => 'Something went wrong, please try again later',
+                'status'  => 500,
+            ], 500);
         });
     }
 }
