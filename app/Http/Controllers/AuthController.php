@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Exceptions\UnauthorizedException;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {

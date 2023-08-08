@@ -32,6 +32,7 @@ Route::group([
     Route::get('{id}', [UserController::class, 'show']);
     Route::put('update', [UserController::class, 'update']);
     Route::delete('{id}', [UserController::class, 'destroy']);
+    Route::put('{id}/roles', [UserController::class, 'updateRoles']);
 });
 
 Route::group([

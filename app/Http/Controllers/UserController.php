@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\ForbiddenException;
+use App\Exceptions\UnprocessableException;
 use App\Mappers\UserMapper;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
+use stdClass;
 
 class UserController extends Controller
 {
@@ -14,8 +18,8 @@ class UserController extends Controller
 
     public function __construct(User $user)
     {
-        $this->middleware('jwt.auth')->only(['index', 'show', 'update', 'destroy', 'me']);
-        $this->middleware('role:worker|admin')->only(['index', 'show']);
+        $this->middleware('jwt.auth')->only(['index', 'show', 'update', 'destroy', 'me', 'updateRoles']);
+        $this->middleware('role:worker|admin')->only(['index', 'show', 'updateRoles']);
         $this->middleware('role:admin')->only('destroy');
         $this->user = $user;
     }
@@ -94,6 +98,42 @@ class UserController extends Controller
     public function me() 
     {
         $user = auth()->user();
+        $dto = UserMapper::mapToDTO($user);
+        return response($dto);
+    }
+
+    public function updateRoles(Request $request, $id) {
+        $authenticatedUser = auth()->user();
+        $user = $this->getUserById($id);
+        $rules = [
+            'roles' => 'required|array'
+        ];
+        $feedback = [
+            'required' => 'The :attribute is required'
+        ];
+        $request->validate($rules, $feedback);
+        $role = new Role();
+        $roles = $role->whereIn('id', $request->get('roles'))->get();
+
+        if($roles->count() === 0) {
+            $errors = new stdClass;
+            $errors->genres = ['No roles found'];
+            throw new UnprocessableException($errors);
+        }
+
+        if($authenticatedUser->id === $user->id) {
+            throw new ForbiddenException('You cannot change your own roles');
+        }
+
+        $userAuthenticatedIsAdmin = $authenticatedUser->hasRole('admin');
+        $userIsAdmin = $user->hasRole('admin');
+
+        if($userIsAdmin && !$userAuthenticatedIsAdmin) {
+            throw new ForbiddenException('You dont have permisstion to change the roles of a admin user');
+        }
+
+        $user->syncRoles($roles);
+        $user = $this->getUserById($id);
         $dto = UserMapper::mapToDTO($user);
         return response($dto);
     }
