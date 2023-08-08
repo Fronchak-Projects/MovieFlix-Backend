@@ -62,6 +62,12 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+}
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
