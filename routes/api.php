@@ -26,6 +26,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('genres', GenreController::class);
 Route::apiResource('movies', MovieController::class);
+
+Route::post('movies/{movieId}/reviews', [ReviewController::class, 'store']);
+Route::get('movies/{movieId}/reviews', [ReviewController::class, 'movieReviews']);
+Route::get('users/{userId}/reviews', [ReviewController::class, 'userReviews']);
+Route::put('reviews/{id}', [ReviewController::class, 'update']);
+Route::delete('reviews/{id}', [ReviewController::class, 'destroy']);
+Route::get('users/my-reviews', [ReviewController::class, 'myReviews']);
+
 Route::group([
     'prefix' => 'users'
 ], function() {
@@ -36,12 +44,6 @@ Route::group([
     Route::delete('{id}', [UserController::class, 'destroy']);
     Route::put('{id}/roles', [UserController::class, 'updateRoles']);
 });
-
-Route::post('movies/{movieId}/reviews', [ReviewController::class, 'store']);
-Route::get('movies/{movieId}/reviews', [ReviewController::class, 'movieReviews']);
-Route::get('users/{userId}/reviews', [ReviewController::class, 'userReviews']);
-Route::put('reviews/{id}', [ReviewController::class, 'update']);
-Route::delete('reviews/{id}', [ReviewController::class, 'destroy']);
 
 Route::group([
     'middleware' => 'api',

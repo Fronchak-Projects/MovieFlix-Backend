@@ -21,7 +21,7 @@ class ReviewController extends Controller
         $this->review = $review;
         $this->movie = $movie;
         $this->user = $user;
-        $this->middleware('jwt.auth')->only(['store', 'update', 'destroy']);
+        $this->middleware('jwt.auth')->only(['store', 'update', 'destroy', 'myReviews']);
         $this->middleware('role:member|worker|admin')->only(['store']);
     }
     
@@ -130,5 +130,25 @@ class ReviewController extends Controller
         }
         $review->delete();
         return response('', 204);
+    }
+
+    public function myReviews() 
+    {
+        $user = auth()->user();
+        $reviews = $this->review->with('movie')->where('user_id', '=', $user->id)->get();
+        $dtos = $reviews->map(function(Review $review) {
+            $movie = $review->movie;
+            return [
+                'id' => $review->id,
+                'comment' => $review->comment,
+                'rating' => $review->rating,
+                'movie' => [
+                    'id' => $movie->id,
+                    'title' => $movie->title,
+                    'image' => $movie->image
+                ]
+            ];
+        });
+        return response($dtos);  
     }
 }
