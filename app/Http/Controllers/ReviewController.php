@@ -21,7 +21,7 @@ class ReviewController extends Controller
         $this->review = $review;
         $this->movie = $movie;
         $this->user = $user;
-        $this->middleware('jwt.auth')->only(['store', 'update']);
+        $this->middleware('jwt.auth')->only(['store', 'update', 'destroy']);
         $this->middleware('role:member|worker|admin')->only(['store']);
     }
     
@@ -114,18 +114,21 @@ class ReviewController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Review $review)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Review $review)
+    public function destroy($id)
     {
-        //
+        $review = $this->review->find($id);
+        if($review === null) {
+            throw new EntityNotFoundException('Review not found');
+        }
+        $user = auth()->user();
+        if($review->user_id !== $user->id) {
+            if(!($user->hasRole('admin'))) {
+                throw new ForbiddenException('You can only delete your own reviews');
+            }
+        }
+        $review->delete();
+        return response('', 204);
     }
 }
