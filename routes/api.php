@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,8 @@ Route::group([
     Route::delete('{id}', [UserController::class, 'destroy']);
     Route::put('{id}/roles', [UserController::class, 'updateRoles']);
 });
+
+Route::post('movies/{movieId}/reviews', [ReviewController::class, 'store']);
 
 Route::group([
     'middleware' => 'api',
