@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\BadRequestException;
 use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\ForbiddenException;
 use App\Models\Movie;
 use App\Models\Review;
 use App\Models\User;
@@ -20,18 +21,10 @@ class ReviewController extends Controller
         $this->review = $review;
         $this->movie = $movie;
         $this->user = $user;
-        $this->middleware('jwt.auth')->only(['store']);
+        $this->middleware('jwt.auth')->only(['store', 'update']);
         $this->middleware('role:member|worker|admin')->only(['store']);
     }
     
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -59,6 +52,27 @@ class ReviewController extends Controller
             'rating' => $review->rating
         ];
         return response($dto, 201);
+    }
+
+    public function update(Request $request, $id) 
+    {
+        $review = $this->review->with('user')->find($id);
+        if($review === null) {
+            throw new EntityNotFoundException('Review not found');
+        }
+        $request->validate($this->review->rules(), $this->review->feedback());  
+        $user = auth()->user();
+        if($review->user->id !== $user->id) {
+            throw new ForbiddenException('You can only change your own reviews');
+        }
+        $review->fill($request->all());
+        $review->update();
+        $dto = [
+            'id' => $review->id,
+            'comment' => $review->comment,
+            'rating' => $review->rating
+        ];
+        return response($dto);
     }
 
     public function movieReviews($movieId) 
@@ -103,14 +117,6 @@ class ReviewController extends Controller
      * Display the specified resource.
      */
     public function show(Review $review)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Review $review)
     {
         //
     }

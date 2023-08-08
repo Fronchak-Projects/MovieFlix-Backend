@@ -5,6 +5,7 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,7 @@ Route::group([
 Route::post('movies/{movieId}/reviews', [ReviewController::class, 'store']);
 Route::get('movies/{movieId}/reviews', [ReviewController::class, 'movieReviews']);
 Route::get('users/{userId}/reviews', [ReviewController::class, 'userReviews']);
+Route::put('reviews/{id}', [ReviewController::class, 'update']);
 
 Route::group([
     'middleware' => 'api',
