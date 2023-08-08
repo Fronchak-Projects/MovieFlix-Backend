@@ -10,10 +10,12 @@ class MovieMapper
     public static function mapToDTO(Movie $movie) 
     {
         $genresDTO = GenreMapper::mapToDTOs($movie->genres);
+        $rating = $movie->reviews->avg('rating');
         return [
             'id' => $movie->id,
             'title' => $movie->title,
             'synopsis' => $movie->synopsis,
+            'rating' => $rating,
             'image' => $movie->image,
             'genres' => $genresDTO
         ];

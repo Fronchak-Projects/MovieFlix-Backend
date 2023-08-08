@@ -72,7 +72,10 @@ class MovieController extends Controller
      */
     public function show($id)
     {
-        $movie = $this->getMovieById($id);
+        $movie = $this->movie->with('reviews')->find($id);
+        if($movie === null) {
+            throw new EntityNotFoundException('Movie not found');
+        }
         $dto = MovieMapper::mapToDTO($movie);
         return response($dto);
     }
