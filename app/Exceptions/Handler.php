@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
                 'status'  => 422,
             ], 422);
         });
-        /*
+
         $this->renderable(function (Exception $e, $request) {
             return response()->json([
                 'error' => 'Internal server error',
@@ -60,6 +60,5 @@ class Handler extends ExceptionHandler
                 'status'  => 500,
             ], 500);
         });
-        */
     }
 }

@@ -24,11 +24,22 @@ class UserController extends Controller
         $this->user = $user;
     }
 
-    public function index() 
+    public function index(Request $request) 
     {
-        $users = $this->user->all();
-        $dtos = UserMapper::mapToDTOs($users);
-        return response($dtos);
+        $email = $request->query('email', '');
+        $name = $request->query('name', '');
+        $roleId = $request->query('role', null);
+        $size = $request->query('size', 4);
+        $pagination = $this->user
+                        ->select('id', 'name', 'email', 'image')
+                        ->where('name', 'like', '%' . $name . '%')
+                        ->where('email', 'like', '%' . $email . '%')
+                        ->whereHas('roles', function($query) use($roleId) {
+                            if($roleId !== null) {
+                                $query->where('id', '=', $roleId);
+                            }
+                        })->paginate($size);
+        return response($pagination);
     }
 
     public function show($id)

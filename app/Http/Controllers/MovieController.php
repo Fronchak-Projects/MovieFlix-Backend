@@ -34,7 +34,7 @@ class MovieController extends Controller
         $title = $request->query('title', '');
         $size = $request->query('size', 4);
         $genreId = $request->query('genre');
-        $movies = $this->movie
+        $pagination = $this->movie
                     ->select('id', 'title', 'image')
                     ->where('title', 'like', '%' . $title . '%')
                     ->whereHas('genres', function($query) use($genreId) {
@@ -42,7 +42,7 @@ class MovieController extends Controller
                             $query->where('id', '=', $genreId);
                         }
                     })->paginate($size);
-        return response($movies);
+        return response($pagination);
     }
 
     /**
