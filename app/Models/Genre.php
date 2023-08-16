@@ -14,7 +14,7 @@ class Genre extends Model
 
     public function rules() {
         return [
-            'name' => 'required|min:3|max:50|unique:genres,name',
+            'name' => 'required|min:3|max:50|unique:genres,name,' . $this->id,
             'image' => 'required|file|mimes:jpeg,jpg,png'
         ];
     }

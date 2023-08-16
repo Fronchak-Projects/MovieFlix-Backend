@@ -33,7 +33,7 @@ class Handler extends ExceptionHandler
                 'error' => 'Unauthorized Error',
                 'message' => 'You must be authenticated to access this content',
                 'status'  => 401,
-            ], 403);
+            ], 401);
         });
 
         $this->renderable(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
