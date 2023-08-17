@@ -32,6 +32,7 @@ Route::get('movies/{movieId}/reviews', [ReviewController::class, 'movieReviews']
 Route::get('users/{userId}/reviews', [ReviewController::class, 'userReviews']);
 Route::put('reviews/{id}', [ReviewController::class, 'update']);
 Route::delete('reviews/{id}', [ReviewController::class, 'destroy']);
+Route::get('users/my-reviews/movies/{movieId}', [ReviewController::class, 'myMovieReview']);
 Route::get('users/my-reviews', [ReviewController::class, 'myReviews']);
 
 Route::group([

@@ -14,17 +14,15 @@ class ReviewController extends Controller
 {
     private Review $review;
     private Movie $movie;
-    private User $user;
 
-    public function __construct(Review $review, Movie $movie, User $user)
+    public function __construct(Review $review, Movie $movie)
     {
         $this->review = $review;
         $this->movie = $movie;
-        $this->user = $user;
-        $this->middleware('jwt.auth')->only(['store', 'update', 'destroy', 'myReviews']);
+        $this->middleware('jwt.auth')->only(['store', 'update', 'destroy', 'myReviews', 'myMovieReview']);
         $this->middleware('role:member|worker|admin')->only(['store']);
     }
-    
+
     /**
      * Store a newly created resource in storage.
      */
@@ -54,13 +52,13 @@ class ReviewController extends Controller
         return response($dto, 201);
     }
 
-    public function update(Request $request, $id) 
+    public function update(Request $request, $id)
     {
         $review = $this->review->with('user')->find($id);
         if($review === null) {
             throw new EntityNotFoundException('Review not found');
         }
-        $request->validate($this->review->rules(), $this->review->feedback());  
+        $request->validate($this->review->rules(), $this->review->feedback());
         $user = auth()->user();
         if($review->user->id !== $user->id) {
             throw new ForbiddenException('You can only change your own reviews');
@@ -75,7 +73,7 @@ class ReviewController extends Controller
         return response($dto);
     }
 
-    public function movieReviews($movieId) 
+    public function movieReviews($movieId)
     {
         $reviews = $this->review->with('user')->where('movie_id', '=', $movieId)->get();
         $dtos = $reviews->map(function(Review $review) {
@@ -132,7 +130,7 @@ class ReviewController extends Controller
         return response('', 204);
     }
 
-    public function myReviews() 
+    public function myReviews()
     {
         $user = auth()->user();
         $reviews = $this->review->with('movie')->where('user_id', '=', $user->id)->get();
@@ -149,6 +147,30 @@ class ReviewController extends Controller
                 ]
             ];
         });
-        return response($dtos);  
+        return response($dtos);
+    }
+
+    public function myMovieReview($movieId)
+    {
+        $user = auth()->user();
+        $review = $this->review->with('movie')
+                ->where('user_id', '=', $user->id)
+                ->where('movie_id', '=', $movieId)
+                ->get()->first();
+        if($review === null) {
+            throw new EntityNotFoundException("Review not found");
+        }
+        $movie = $review->movie;
+        $dto = [
+            'id' => $review->id,
+            'comment' => $review->comment,
+            'rating' => $review->rating,
+            'movie' => [
+                'id' => $movie->id,
+                'title' => $movie->title,
+                'image' => $movie->image
+            ]
+        ];
+        return response($dto);
     }
 }
