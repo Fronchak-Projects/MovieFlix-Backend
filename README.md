@@ -26,4 +26,4 @@
 9. In the UserSeeder.php file,  localized in the 'database/seeders' folder you can change the password of the default users, if you want, before run the all the seeds
 10. Run the following command: 'php artisan db:seed' to run the seeds
 11. Run the following command: 'php artisan serve' to initialize the backend
-12. Setup the frontend project following the instructions in the [project page](https://github.com/Fronchak/MovieFlix-Laravel-Frontend-React)
+12. Setup the frontend project following the instructions in the [project page](https://github.com/Fronchak-Projects/MovieFlix-Frontend)
